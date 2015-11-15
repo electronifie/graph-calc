@@ -1,0 +1,37 @@
+{
+  "name": "graph-calc",
+  "version": "0.1.0",
+  "description": "Construct complex graphs with multiple node/edge types, with helpers to perform selective traversals and calculations.",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "./node_modules/.bin/mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/electronifie/graph-calc.git"
+  },
+  "keywords": [
+    "graph",
+    "modelling",
+    "calculator",
+    "graph-traversal"
+  ],
+  "author": "andrew.mckenzie@electronifie.com",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/electronifie/graph-calc/issues"
+  },
+  "homepage": "https://github.com/electronifie/graph-calc",
+  "dependencies": {
+    "lodash": "^3.8.0"
+  },
+  "devDependencies": {
+    "chai": "^3.4.0",
+    "mocha": "^2.0.1",
+    "sinon": "^1.17.2",
+    "stylish-commit-auto-hook-install": "0.0.6"
+  }
+}
