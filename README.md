@@ -1,5 +1,7 @@
 # graph-calc
 
+[![Build Status](https://travis-ci.org/electronifie/graph-calc.svg?branch=master)](https://travis-ci.org/electronifie/graph-calc)
+
 ## Constructing the graph
 
 ### Setup
