@@ -60,7 +60,6 @@ Create an edge, automatically creating the node if it doesn't exist ([more examp
 
 ```javascript
     graph.factory.createOrUpdateEdge('teaches', { teacher: { id: 'Sue' }, class: { id: 'Chemistry' } });
-    graph.factory.createOrUpdateEdge('teaches', { teacher: { id: 'Sue' }, class: { id: 'Chemistry' } });
     graph.factory.createOrUpdateEdge('teaches', { teacher: { id: 'Sue' }, class: { id: 'Physics' } });
 ```
 
@@ -126,7 +125,7 @@ Perform relationship-based calculations, and queries of the graph aided by lodas
    // {
    //   'student-Bobby': {
    //     'department-Science': 2,
-   //     'department-Arts': 1
+   //     'department-Art': 1
    //   },
    //   'student-Jo': {
    //     'department-Science': 4
