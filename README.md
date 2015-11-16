@@ -9,10 +9,10 @@
 A more complete setup can be found [here](https://github.com/electronifie/graph-calc/blob/13a808c4270b641ee8fb50e5c6e9961b62f5ffbd/test/_SchoolGraph.js#L124-L124).
 
 ```javascript
-var Node = require('graph-calc').Node;
 var Edge = require('graph-calc').Edge;
 var Factory = require('graph-calc').Factory;
 var Graph = require('graph-calc').Graph;
+var Node = require('graph-calc').Node;
 var util = require('util');
 
 /* create node types */
