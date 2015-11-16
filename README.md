@@ -13,6 +13,7 @@ var Node = require('graph-calc').Node;
 var Edge = require('graph-calc').Edge;
 var Factory = require('graph-calc').Factory;
 var Graph = require('graph-calc').Graph;
+var util = require('util');
 
 /* create node types */
 
