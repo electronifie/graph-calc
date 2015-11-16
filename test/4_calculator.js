@@ -37,6 +37,8 @@ describe('Calculator', function () {
     graph.factory.createOrUpdateEdge('attendedBy', { student: { id: 'Jo' }, class: { id: 'Physics' } });
     graph.factory.createOrUpdateEdge('attends', { student: { id: 'Jo' }, class: { id: 'Biology' } });
     graph.factory.createOrUpdateEdge('attendedBy', { student: { id: 'Jo' }, class: { id: 'Biology' } });
+    graph.factory.createOrUpdateEdge('attends', { student: { id: 'Jo' }, class: { id: 'ComputerScience' } });
+    graph.factory.createOrUpdateEdge('attendedBy', { student: { id: 'Jo' }, class: { id: 'ComputerScience' } });
 
     graph.factory.createOrUpdateEdge('provides', { class: { id: 'Chemistry' }, department: { id: 'Science' } });
     graph.factory.createOrUpdateEdge('providedBy', { class: { id: 'Chemistry' }, department: { id: 'Science' } });
@@ -44,6 +46,8 @@ describe('Calculator', function () {
     graph.factory.createOrUpdateEdge('providedBy', { class: { id: 'Physics' }, department: { id: 'Science' } });
     graph.factory.createOrUpdateEdge('provides', { class: { id: 'Biology' }, department: { id: 'Science' } });
     graph.factory.createOrUpdateEdge('providedBy', { class: { id: 'Biology' }, department: { id: 'Science' } });
+    graph.factory.createOrUpdateEdge('provides', { class: { id: 'ComputerScience' }, department: { id: 'Science' } });
+    graph.factory.createOrUpdateEdge('providedBy', { class: { id: 'ComputerScience' }, department: { id: 'Science' } });
     graph.factory.createOrUpdateEdge('provides', { class: { id: 'English' }, department: { id: 'Arts' } });
     graph.factory.createOrUpdateEdge('providedBy', { class: { id: 'English' }, department: { id: 'Arts' } });
 
@@ -158,7 +162,7 @@ describe('Calculator', function () {
         'department-Science': 2,
         'department-Arts': 1
       }, {
-        'department-Science': 3
+        'department-Science': 4
       }]);
     });
   });
@@ -187,21 +191,20 @@ describe('Calculator', function () {
           'department-Arts': 1
         },
         'student-Jo': {
-          'department-Science': 3
+          'department-Science': 4
         }
       });
     });
   });
 
-  describe('#calculate', function () {
-    it('can perform complex calculations', function () {
-      return;
+  describe('#calculateWithSaved', function () {
+    it('returns a map of the saved values generated during the calculation, handy for debugging complex calculations.', function () {
       // SPEC:
       // A teacher's "productivity score" is calculated as a product of:
       //  - each student is worth 1 point per department, shared proportionally among their teachers in that deparment
       //  - 3 points for each class taught
-      //  - 10 points for being head of department
       //  - an extra 25% of student points for being head of department
+      //  - 10 points for being head of department
 
       // STEPS:
       // get student classes per department
@@ -269,57 +272,62 @@ describe('Calculator', function () {
       //    result-format:    INT
       //    save-as:          total
 
-
       var targetNode = graph.factory.getNode('teacher', 'teacher-Sue');
 
-      var studentClassesByDepartmentCalculator = new Calculator({ acceptsNodeType: 'student' })
-        .withNodes({ path: ['attends' /* -> CLASS */, 'providedBy' /* -> DEPARTMENT */], revisit: true })
+      var studentClassesByDepartmentCalculator = new Calculator({ acceptsNodeType: 'student' }).start()
+        .withNodes({ path: [ 'attends' /* -> CLASS */, 'providedBy' /* -> DEPARTMENT */ ], revisit: true })
           .map(function (node) { return node.id; })
           .countBy()
-          .return();
+        .finish();
 
-      var classDepartmentCalculator = new Calculator({ acceptsNodeType: 'class' })
-        .withNodes({ path: ['providedBy' /* -> DEPARTMENT */], revisit: false })
+      var classDepartmentCalculator = new Calculator({ acceptsNodeType: 'class' }).start()
+        .withNodes({ path: [ 'providedBy' /* -> DEPARTMENT */ ], revisit: false })
           .map(function (node) { return node.id; })
           .first()
-          .return();
+        .finish();
 
-      var classStudentsCalculator = new Calculator({ acceptsNodeType: 'class' })
-        .withNodes({ path: ['attendedBy' /* -> STUDENT */], revisit: false })
+      var classStudentsCalculator = new Calculator({ acceptsNodeType: 'class' }).start()
+        .withNodes({ path: [ 'attendedBy' /* -> STUDENT */ ], revisit: false })
           .map(function (node) { return node.id; })
-          .return();
+        .finish();
 
-      var calculator = new Calculator({ acceptsNodeType: 'teacher' })
-        .withNodes({ path: ['teaches' /* -> CLASS */, 'attendedBy' /* -> STUDENT */], revisit: false })
+      var calculator = new Calculator({ acceptsNodeType: 'teacher' }).start()
+        .withNodes({ path: [ 'teaches' /* -> CLASS */, 'attendedBy' /* -> STUDENT */ ], revisit: false })
           .mapAndIndexCalc(studentClassesByDepartmentCalculator)
           .saveAs('studentClassesByDepartment')
-        .withNodes({ path: ['teaches' /* -> CLASS */], revisit: false })
+
+        .withNodes({ path: [ 'teaches' /* -> CLASS */ ], revisit: false })
           .saveAs('taughtClasses')
-        .withResult('taughtClasses')
+
+        .withSaved('taughtClasses')
           .mapAndIndexCalc(classDepartmentCalculator)
           .saveAs('taughtClassDepartments')
-        .withResult('taughtClasses')
+
+        .withSaved('taughtClasses')
           .mapAndIndexCalc(classStudentsCalculator)
           .saveAs('studentsByClass')
-        .withNodes({ path: 'headOf', revisit: false })
+
+        .withNodes({ path: [ 'headOf' /* -> DEPARTMENT */ ], revisit: false })
           .thru(function (departmentNodes) { return departmentNodes.length; })
           .saveAs('hodCount')
-        .withResults()
+
+        .withAllSaved()
           .thru(function (results) {
             var studentClassPoints = {};
             _.each(results.studentsByClass, function (studentIds, classId) {
-              var classDepartment = results.taughtClassDepartments[classId];
-              _.each(studentId, function (studentId) {
-                var studentClassesForDepartment = results.studentClassesByDepartment[classDepartment]
+              var classDepartment = results.taughtClassDepartments[ classId ];
+              _.each(studentIds, function (studentId) {
+                var studentClassesForDepartment = results.studentClassesByDepartment[ studentId ][ classDepartment ];
                 var points = 1 / studentClassesForDepartment;
-                studentClassPoints[studentId] = studentClassPoints[studentId] || {};
-                studentClassPoints[studentId][classId] = points;
+                studentClassPoints[ studentId ] = studentClassPoints[ studentId ] || {};
+                studentClassPoints[ studentId ][ classId ] = points;
               });
             });
             return studentClassPoints;
           })
           .saveAs('studentClassPoints')
-        .withResult('studentClassPoints')
+
+        .withSaved('studentClassPoints')
           .thru(function (studentClassPoints) {
             return _.chain(studentClassPoints)
               .values()
@@ -329,23 +337,63 @@ describe('Calculator', function () {
               .value();
           })
           .saveAs('studentPoints')
-        .withResult('taughtClassDepartments')
-          .thru(function (taughtClassDepartments) { return _.keys(taughtClassDepartments).length; })
+
+        .withSaved('taughtClassDepartments')
+          .thru(function (taughtClassDepartments) { return _.keys(taughtClassDepartments).length * 3; })
           .saveAs('classPoints')
-        .withResults()
+
+        .withAllSaved()
           .thru(function (results) { return results.hodCount * 0.25 * results.studentPoints; })
           .saveAs('hodStudentPoints')
-        .withResult(hodCount)
+
+        .withSaved('hodCount')
           .thru(function (hodCount) { return hodCount * 10; })
           .saveAs('hodPoints')
-        .withResults()
+
+        .withAllSaved()
           .thru(function (results) { return results.hodPoints + results.hodStudentPoints + results.classPoints + results.studentPoints })
           .saveAs('points')
-        .return('points');
 
-      var result = calculator.calculate(targetNode);
+        .finish();
 
+      var result = calculator.calculateWithSaved(targetNode);
+
+      assert.deepEqual(
+        result.saved.studentClassesByDepartment,
+        {
+          'student-Bobby': { 'department-Science': 2, 'department-Arts': 1 },
+          'student-Jo': { 'department-Science': 4 }
+        }
+      );
+
+      assert.deepEqual(_.pluck(result.saved.taughtClasses, 'id'), [ 'class-Biology', 'class-English' ]);
+
+      assert.deepEqual(
+        result.saved.taughtClassDepartments,
+        { 'class-Biology': 'department-Science', 'class-English': 'department-Arts' }
+      );
+
+      assert.deepEqual(
+        result.saved.studentsByClass,
+        { 'class-Biology': [ 'student-Bobby', 'student-Jo' ], 'class-English': [ 'student-Bobby' ] }
+      );
+
+      assert.equal(result.saved.hodCount, 1);
+
+      assert.deepEqual(
+        result.saved.studentClassPoints,
+        { 'student-Bobby': { 'class-Biology': 0.5, 'class-English': 1 }, 'student-Jo': { 'class-Biology': 0.25 } }
+      );
+
+      assert.equal(result.saved.studentPoints, 1.75);            //  1.75    = 0.5 + 1 + 0.25
+      assert.equal(result.saved.classPoints, 6);                 //  6       = 2 * 3
+      assert.equal(result.saved.hodStudentPoints, 0.4375);       //  0.4375  = 1.75 * 0.25
+      assert.equal(result.saved.hodPoints, 10);                  // 10       = 1 * 10
+                                                                 // --------
+      assert.equal(result.saved.points, 18.1875);                // 18.1875
+
+      assert.equal(result.result, 18.1875);
     });
-  });
 
+  });
 });
