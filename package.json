@@ -1,7 +1,7 @@
 {
   "name": "graph-calc",
   "version": "0.1.0",
-  "description": "Construct complex graphs with multiple node/edge types, with helpers to perform selective traversals and calculations.",
+  "description": "Construct graphs with multiple node/edge types and helpers to perform selective traversals and calculations.",
   "main": "index.js",
   "directories": {
     "test": "test"
