@@ -50,11 +50,11 @@ describe('Calculator', function () {
     graph.factory.createOrUpdateEdge('headOf',  { teacher: { id: 'Sue' }, department: { id: 'Science' } });
   });
 
-  describe('#start, #finish', function () {
+  describe('#start, #finish, #calculate', function () {
     it('builds calculations with access to lodash functions', function () {
 
       // A trivial calculator that calculates 2 * node.id.length
-      var calculator = new Calculator({ acceptsNode: 'student' })
+      var calculator = new Calculator({ acceptsNodeType: 'student' })
           // build the calculation
           .start()
             // -> StudentNode(student-Bobby) (i.e. the node passed to calculate(...))
@@ -81,7 +81,7 @@ describe('Calculator', function () {
       var targetNode = graph.factory.getNode('student', 'student-Bobby');
 
       // Student classes by department
-      var calculator = new Calculator({ acceptsNode: 'student' })
+      var calculator = new Calculator({ acceptsNodeType: 'student' })
         .start()
           .withNodes({ path: ['attends' /* -> CLASS */, 'providedBy' /* -> DEPARTMENT */], revisitNodes: true })
           .map(function (node) { return node.id; })
@@ -101,7 +101,7 @@ describe('Calculator', function () {
       var targetNode = graph.factory.getNode('student', 'student-Bobby');
 
       // Student classes by department
-      var calculator = new Calculator({ acceptsNode: 'student' })
+      var calculator = new Calculator({ acceptsNodeType: 'student' })
         .start()
           .thru(function () { return [1, 2, 3, 4]; })
           .saveAs('base')
@@ -133,6 +133,63 @@ describe('Calculator', function () {
       var result = calculator.calculate(targetNode);
       assert.equal(result, 34);
 
+    });
+  });
+
+  describe('#start -> #mapCalc', function () {
+    it('maps sub-calculations', function () {
+      var targetNode = graph.factory.getNode('teacher', 'teacher-Sue');
+
+      var classByDepartmentCalculator = new Calculator({ acceptsNodeType: 'student' })
+        .start()
+          .withNodes({ path: ['attends' /* -> CLASS */, 'providedBy' /* -> DEPARTMENT */], revisitNodes: true })
+          .map(function (node) { return node.id; })
+          .countBy()
+        .finish();
+
+      var teacherStudentCalculator = new Calculator({ acceptsNodeType: 'teacher' })
+        .start()
+          .withNodes({ path: ['teaches' /* -> CLASS */, 'attendedBy' /* -> STUDENT */], revisitNodes: false })
+          .mapCalc(classByDepartmentCalculator)
+        .finish();
+
+      var result = teacherStudentCalculator.calculate(targetNode);
+      assert.deepEqual(result, [{
+        'department-Science': 2,
+        'department-Arts': 1
+      }, {
+        'department-Science': 3
+      }]);
+    });
+  });
+
+  describe('#start -> #mapAndIndexCalc', function () {
+    it('maps sub-calculations, indexing by nodeId', function () {
+      var targetNode = graph.factory.getNode('teacher', 'teacher-Sue');
+
+      var classByDepartmentCalculator = new Calculator({ acceptsNodeType: 'student' })
+        .start()
+          .withNodes({ path: ['attends' /* -> CLASS */, 'providedBy' /* -> DEPARTMENT */], revisitNodes: true })
+          .map(function (node) { return node.id; })
+          .countBy()
+        .finish();
+
+      var teacherStudentCalculator = new Calculator({ acceptsNodeType: 'teacher' })
+        .start()
+          .withNodes({ path: ['teaches' /* -> CLASS */, 'attendedBy' /* -> STUDENT */], revisitNodes: false })
+          .mapAndIndexCalc(classByDepartmentCalculator)
+        .finish();
+
+      var result = teacherStudentCalculator.calculate(targetNode);
+      assert.deepEqual(result, {
+        'student-Bobby': {
+          'department-Science': 2,
+          'department-Arts': 1
+        },
+        'student-Jo': {
+          'department-Science': 3
+        }
+      });
     });
   });
 
@@ -215,24 +272,24 @@ describe('Calculator', function () {
 
       var targetNode = graph.factory.getNode('teacher', 'teacher-Sue');
 
-      var studentClassesByDepartmentCalculator = new Calculator({ acceptsNode: 'student' })
+      var studentClassesByDepartmentCalculator = new Calculator({ acceptsNodeType: 'student' })
         .withNodes({ path: ['attends' /* -> CLASS */, 'providedBy' /* -> DEPARTMENT */], revisit: true })
           .map(function (node) { return node.id; })
           .countBy()
           .return();
 
-      var classDepartmentCalculator = new Calculator({ acceptsNode: 'class' })
+      var classDepartmentCalculator = new Calculator({ acceptsNodeType: 'class' })
         .withNodes({ path: ['providedBy' /* -> DEPARTMENT */], revisit: false })
           .map(function (node) { return node.id; })
           .first()
           .return();
 
-      var classStudentsCalculator = new Calculator({ acceptsNode: 'class' })
+      var classStudentsCalculator = new Calculator({ acceptsNodeType: 'class' })
         .withNodes({ path: ['attendedBy' /* -> STUDENT */], revisit: false })
           .map(function (node) { return node.id; })
           .return();
 
-      var calculator = new Calculator({ acceptsNode: 'teacher' })
+      var calculator = new Calculator({ acceptsNodeType: 'teacher' })
         .withNodes({ path: ['teaches' /* -> CLASS */, 'attendedBy' /* -> STUDENT */], revisit: false })
           .mapAndIndexCalc(studentClassesByDepartmentCalculator)
           .saveAs('studentClassesByDepartment')
