@@ -96,6 +96,46 @@ describe('Calculator', function () {
     });
   });
 
+  describe('#start -> #saveAs, #withSaved, #withAllSaved', function () {
+    it('provides a way to store + retrieve partial results during the calculation', function () {
+      var targetNode = graph.factory.getNode('student', 'student-Bobby');
+
+      // Student classes by department
+      var calculator = new Calculator({ acceptsNode: 'student' })
+        .start()
+          .thru(function () { return [1, 2, 3, 4]; })
+          .saveAs('base')
+
+          .tap(function (currentVal) { assert.deepEqual(currentVal, [1, 2, 3, 4]); })
+
+          .reduce(function (m, n) { return m + n; }, 0)
+          .saveAs('sumOfBase')
+
+          .tap(function (currentVal) { assert.deepEqual(currentVal, 10); })
+
+          .withSaved('base')
+
+          .tap(function (base) { assert.deepEqual(base, [1, 2, 3, 4]); })
+
+          .reduce(function (m, n) { return m * n; }, 1)
+          .saveAs('productOfBase')
+
+          .tap(function (currentVal) { assert.deepEqual(currentVal, 24); })
+
+          .withAllSaved()
+
+          .tap(function (allSaved) { assert.deepEqual(allSaved, { base: [1, 2, 3, 4], sumOfBase: 10, productOfBase: 24 }); })
+
+          .thru(function (allSaved) { return allSaved.sumOfBase + allSaved.productOfBase; })
+
+        .finish();
+
+      var result = calculator.calculate(targetNode);
+      assert.equal(result, 34);
+
+    });
+  });
+
   describe('#calculate', function () {
     it('can perform complex calculations', function () {
       return;
