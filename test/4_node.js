@@ -13,7 +13,7 @@ describe('Node', function () {
   });
 
   describe('#on', function () {
-    it.only('emits an added-edge event', function () {
+    it('emits an added-edge event', function () {
       var graph = new SchoolGraph();
 
       var englishNode = graph.factory.createOrUpdateNode('class', { id: 'English' });
