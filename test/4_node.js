@@ -39,4 +39,40 @@ describe('Node', function () {
 
     });
   });
+
+  describe('#delete', function () {
+    it('removes an node from the graph and its attached edges', function () {
+      var graph = new SchoolGraph();
+
+      var node = graph.factory.createOrUpdateNode('class', { id: 'English' });
+
+      graph.factory.createOrUpdateEdge('taughtBy', { teacher: { id: 'Sue' }, class: { id: 'English' } });
+      graph.factory.createOrUpdateEdge('attendedBy', { student: { id: 'Fred' }, class: { id: 'English' } });
+      graph.factory.createOrUpdateEdge('attends', { student: { id: 'Bob' }, class: { id: 'English' } });
+      graph.factory.createOrUpdateEdge('attends', { student: { id: 'Bob' }, class: { id: 'Science' } });
+
+      assert.deepEqual(_.pluck(graph.getFullGraph().nodes, 'id'), [ 'teacher-Sue', 'class-English', 'class-Science', 'student-Fred', 'student-Bob' ]);
+      assert.deepEqual(_.pluck(graph.getFullGraph().edges, 'id'), [ 'taughtBy-English-Sue', 'attends-Bob-English', 'attends-Bob-Science', 'attendedBy-English-Fred' ]);
+      assert.ok(graph.factory.getNode('class', 'class-English'));
+      assert.ok(graph.factory.getEdge('taughtBy', 'taughtBy-English-Sue'));
+
+      node.delete();
+
+      assert.deepEqual(_.pluck(graph.getFullGraph().nodes, 'id'), [ 'teacher-Sue', 'class-Science', 'student-Fred', 'student-Bob' ]);
+      assert.deepEqual(_.pluck(graph.getFullGraph().edges, 'id'), [ 'attends-Bob-Science' ]);
+      assert.notOk(graph.factory.getNode('class', 'class-English'));
+      assert.notOk(graph.factory.getEdge('taughtBy', 'taughtBy-English-Sue'));
+    });
+
+    it('emits a "deleted" event', function () {
+      var graph = new SchoolGraph();
+      var node = graph.factory.createOrUpdateNode('class', { id: 'English' });
+      graph.factory.createOrUpdateEdge('taughtBy', { teacher: { id: 'Sue' }, class: { id: 'English' } });
+      var onDeletedStub = sinon.stub();
+      node.on('deleted', onDeletedStub);
+      node.delete();
+      assert.equal(onDeletedStub.callCount, 1);
+      assert.equal(onDeletedStub.firstCall.args[0].id, 'class-English');
+    });
+  });
 });
