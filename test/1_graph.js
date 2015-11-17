@@ -1,3 +1,4 @@
+var _ = require('lodash');
 var assert = require('chai').assert;
 var sinon = require('sinon');
 var SchoolGraphClasses = require('./_SchoolGraph');
@@ -158,4 +159,34 @@ describe('Graph', function () {
 
   });
 
+  describe('#factory.on', function () {
+    it('emits events when an edge or node is created', function () {
+      var createdNodeStub = sinon.stub();
+      var createdTeacherNodeStub = sinon.stub();
+      var createdEdgeStub = sinon.stub();
+      var createdTeachesEdgeStub = sinon.stub();
+
+      var graph = new SchoolGraph();
+      graph.factory.on('created-node', createdNodeStub);
+      graph.factory.on('created-node-teacher', createdTeacherNodeStub);
+      graph.factory.on('created-edge', createdEdgeStub);
+      graph.factory.on('created-edge-teaches', createdTeachesEdgeStub);
+
+      graph.factory.createOrUpdateEdge('teaches', { teacher: { id: 'Sue' }, class: { id: 'Chemistry' } });
+      graph.factory.createOrUpdateEdge('teaches', { teacher: { id: 'Sue' }, class: { id: 'Chemistry' } }); // duplicate
+      graph.factory.createOrUpdateEdge('teaches', { teacher: { id: 'Sue' }, class: { id: 'English' } });
+      graph.factory.createOrUpdateEdge('teaches', { teacher: { id: 'Bob' }, class: { id: 'Physics' } });
+      graph.factory.createOrUpdateEdge('attends', { student: { id: 'Bill' }, class: { id: 'Physics' } });
+
+      assert.equal(createdNodeStub.callCount, 6);
+      assert.equal(createdTeacherNodeStub.callCount, 2);
+      assert.equal(createdEdgeStub.callCount, 4);
+      assert.equal(createdTeachesEdgeStub.callCount, 3);
+
+      assert.deepEqual(_.map(createdNodeStub.args, function (call) { return call[0].id }), ['teacher-Sue', 'class-Chemistry', 'class-English', 'teacher-Bob', 'class-Physics', 'student-Bill']);
+      assert.deepEqual(_.map(createdTeacherNodeStub.args, function (call) { return call[0].id }), ['teacher-Sue', 'teacher-Bob']);
+      assert.deepEqual(_.map(createdEdgeStub.args, function (call) { return call[0].id }), ['teaches-Sue-Chemistry', 'teaches-Sue-English', 'teaches-Bob-Physics', 'attends-Bill-Physics']);
+      assert.deepEqual(_.map(createdTeachesEdgeStub.args, function (call) { return call[0].id }), ['teaches-Sue-Chemistry', 'teaches-Sue-English', 'teaches-Bob-Physics']);
+    });
+  });
 });
