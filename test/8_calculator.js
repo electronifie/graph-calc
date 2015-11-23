@@ -272,8 +272,6 @@ describe('Calculator', function () {
       //    result-format:    INT
       //    save-as:          total
 
-      var targetNode = graph.factory.getNode('teacher', 'teacher-Sue');
-
       var studentClassesByDepartmentCalculator = new Calculator({ acceptsNodeType: 'student' }).start()
         .withNodes({ path: [ 'attends' /* -> CLASS */, 'providedBy' /* -> DEPARTMENT */ ], revisit: true })
           .map(function (node) { return node.id; })
@@ -356,43 +354,62 @@ describe('Calculator', function () {
 
         .finish();
 
-      var result = calculator.calculateWithSaved(targetNode);
+      var teacherSueNode = graph.factory.getNode('teacher', 'teacher-Sue');
+      var resultSue = calculator.calculateWithSaved(teacherSueNode);
 
       assert.deepEqual(
-        result.saved.studentClassesByDepartment,
+        resultSue.saved.studentClassesByDepartment,
         {
           'student-Bobby': { 'department-Science': 2, 'department-Arts': 1 },
           'student-Jo': { 'department-Science': 4 }
         }
       );
 
-      assert.deepEqual(_.pluck(result.saved.taughtClasses, 'id'), [ 'class-Biology', 'class-English' ]);
+      assert.deepEqual(_.pluck(resultSue.saved.taughtClasses, 'id'), [ 'class-Biology', 'class-English' ]);
 
       assert.deepEqual(
-        result.saved.taughtClassDepartments,
+        resultSue.saved.taughtClassDepartments,
         { 'class-Biology': 'department-Science', 'class-English': 'department-Arts' }
       );
 
       assert.deepEqual(
-        result.saved.studentsByClass,
+        resultSue.saved.studentsByClass,
         { 'class-Biology': [ 'student-Bobby', 'student-Jo' ], 'class-English': [ 'student-Bobby' ] }
       );
 
-      assert.equal(result.saved.hodCount, 1);
+      assert.equal(resultSue.saved.hodCount, 1);
 
       assert.deepEqual(
-        result.saved.studentClassPoints,
+        resultSue.saved.studentClassPoints,
         { 'student-Bobby': { 'class-Biology': 0.5, 'class-English': 1 }, 'student-Jo': { 'class-Biology': 0.25 } }
       );
 
-      assert.equal(result.saved.studentPoints, 1.75);            //  1.75    = 0.5 + 1 + 0.25
-      assert.equal(result.saved.classPoints, 6);                 //  6       = 2 * 3
-      assert.equal(result.saved.hodStudentPoints, 0.4375);       //  0.4375  = 1.75 * 0.25
-      assert.equal(result.saved.hodPoints, 10);                  // 10       = 1 * 10
-                                                                 // --------
-      assert.equal(result.saved.points, 18.1875);                // 18.1875
+      assert.equal(resultSue.saved.studentPoints, 1.75);            //  1.75    = 0.5 + 1 + 0.25
+      assert.equal(resultSue.saved.classPoints, 6);                 //  6       = 2 * 3
+      assert.equal(resultSue.saved.hodStudentPoints, 0.4375);       //  0.4375  = 1.75 * 0.25
+      assert.equal(resultSue.saved.hodPoints, 10);                  // 10       = 1 * 10
+                                                                    // --------
+      assert.equal(resultSue.saved.points, 18.1875);                // 18.1875
 
-      assert.equal(result.result, 18.1875);
+      assert.equal(resultSue.result, 18.1875);
+
+      var teacherBillNode = graph.factory.getNode('teacher', 'teacher-Bill');
+      var resultBill = calculator.calculateWithSaved(teacherBillNode);
+
+      assert.deepEqual(
+          resultBill.saved.studentClassPoints,
+          { 'student-Bobby': { 'class-Chemistry': 0.5 }, 'student-Jo': { 'class-Chemistry': 0.25, 'class-Physics': 0.25 } }
+      );
+
+      assert.equal(resultBill.saved.studentPoints, 1);               // 1       = 0.5 + 0.25 + 0.25
+      assert.equal(resultBill.saved.classPoints, 6);                 // 6       = 2 * 3
+      assert.equal(resultBill.saved.hodStudentPoints, 0);            // 0       = 0.75 * 0
+      assert.equal(resultBill.saved.hodPoints, 0);                   // 0       = 0 * 10
+                                                                     // --------
+      assert.equal(resultBill.saved.points, 7);                      // 7
+
+      assert.equal(resultBill.result, 7);
+
     });
 
   });
