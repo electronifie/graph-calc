@@ -51,15 +51,15 @@ describe('Node', function () {
       graph.factory.createOrUpdateEdge('attends', { student: { id: 'Bob' }, class: { id: 'English' } });
       graph.factory.createOrUpdateEdge('attends', { student: { id: 'Bob' }, class: { id: 'Science' } });
 
-      assert.deepEqual(_.pluck(graph.getFullGraph().nodes, 'id'), [ 'teacher-Sue', 'class-English', 'class-Science', 'student-Fred', 'student-Bob' ]);
-      assert.deepEqual(_.pluck(graph.getFullGraph().edges, 'id'), [ 'taughtBy-English-Sue', 'attends-Bob-English', 'attends-Bob-Science', 'attendedBy-English-Fred' ]);
+      assert.deepEqual(_.pluck(graph.toJson().nodes, 'id'), [ 'teacher-Sue', 'class-English', 'class-Science', 'student-Fred', 'student-Bob' ]);
+      assert.deepEqual(_.pluck(graph.toJson().edges, 'id'), [ 'taughtBy-English-Sue', 'attends-Bob-English', 'attends-Bob-Science', 'attendedBy-English-Fred' ]);
       assert.ok(graph.factory.getNode('class', 'class-English'));
       assert.ok(graph.factory.getEdge('taughtBy', 'taughtBy-English-Sue'));
 
       node.delete();
 
-      assert.deepEqual(_.pluck(graph.getFullGraph().nodes, 'id'), [ 'teacher-Sue', 'class-Science', 'student-Fred', 'student-Bob' ]);
-      assert.deepEqual(_.pluck(graph.getFullGraph().edges, 'id'), [ 'attends-Bob-Science' ]);
+      assert.deepEqual(_.pluck(graph.toJson().nodes, 'id'), [ 'teacher-Sue', 'class-Science', 'student-Fred', 'student-Bob' ]);
+      assert.deepEqual(_.pluck(graph.toJson().edges, 'id'), [ 'attends-Bob-Science' ]);
       assert.notOk(graph.factory.getNode('class', 'class-English'));
       assert.notOk(graph.factory.getEdge('taughtBy', 'taughtBy-English-Sue'));
     });

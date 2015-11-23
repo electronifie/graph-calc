@@ -5,5 +5,6 @@ module.exports = {
   Factory: require('./lib/Factory'),
   Traverser: require('./lib/Traverser'),
   PathTraverser: require('./lib/PathTraverser'),
-  Calculator: require('./lib/Calculator')
+  Calculator: require('./lib/Calculator'),
+  Serializer: require('./lib/Serializer')
 };

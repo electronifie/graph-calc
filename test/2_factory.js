@@ -22,7 +22,7 @@ describe('Factory', function () {
       graph.factory.createOrUpdateEdge('teaches', { teacher: { id: 'Sue' }, class: { id: 'Physics' } });
 
       assert.deepEqual(
-        graph.getFullGraph(),
+        graph.toJson(),
         {
           "edges": [
             {
@@ -70,7 +70,7 @@ describe('Factory', function () {
       graph.factory.createOrUpdateNode('teacher', { id: 'Mary' });
 
       assert.deepEqual(
-        graph.getFullGraph(),
+        graph.toJson(),
         {
           "edges": [],
           "nodes": [
