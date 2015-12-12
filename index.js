@@ -6,5 +6,6 @@ module.exports = {
   Traverser: require('./lib/Traverser'),
   PathTraverser: require('./lib/PathTraverser'),
   Calculator: require('./lib/Calculator'),
-  Serializer: require('./lib/Serializer')
+  Serializer: require('./lib/Serializer'),
+  NetworkSubscriber: require('./lib/NetworkSubscriber')
 };
