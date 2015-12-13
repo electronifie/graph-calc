@@ -141,3 +141,26 @@ var result = teacherStudentCalculator.calculate(targetNode);
 // }
 ```
 
+### Events
+
+Subscribe to events within a node's network ([more examples](https://github.com/electronifie/graph-calc/blob/master/test/10_networkSubscriber.js)):
+
+```javascript
+  var NetworkSubscriber = require('graph-calc').NetworkSubscriber;
+  
+  // Subscribe to all the 'grade-added' and 'report-due' (fictional) events for
+  // all student's taught by a teacher.
+  new NetworkSubscriber({
+    node: graph.factory.getNode('teacher', 'teacher-Sue'),
+    
+    // Define the network
+    maxDepth: 3,
+    onlyEdgeTypes: ['teaches', 'attendedBy'],
+    
+    // Attach the listeners
+    nodeEvents: {
+      'grade-added': function (grade) { ... },
+      'report-due': function (reportName) { ... }
+    }
+  });
+```
