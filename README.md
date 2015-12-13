@@ -67,7 +67,7 @@ Create an edge, automatically creating the node if it doesn't exist ([more examp
 
 ### Traversal
 
-Traverse the full graph ([more examples](https://github.com/electronifie/graph-calc/blob/master/test/2_traverser.js)):
+Traverse the full graph ([more examples](https://github.com/electronifie/graph-calc/blob/master/test/6_traverser.js)):
 
 ```javascript
 var Traverser = require('graph-calc').Traverser;
@@ -95,7 +95,7 @@ var traverser = new Traverser({
 traverser.traverse(startNode);
 ```
 
-Traverse along a path of edge types ([more examples](https://github.com/electronifie/graph-calc/blob/master/test/3_pathTraverser.js)):
+Traverse along a path of edge types ([more examples](https://github.com/electronifie/graph-calc/blob/master/test/7_pathTraverser.js)):
 
 ```javascript
 var PathTraverser = require('graph-calc').PathTraverser;
@@ -109,7 +109,7 @@ traverser.traverse(teacherNode);
 
 ### Calculation
 
-Perform relationship-based calculations, and queries of the graph aided by lodash ([more examples](https://github.com/electronifie/graph-calc/blob/master/test/4_calculator.js)):
+Perform relationship-based calculations, and queries of the graph aided by lodash ([more examples](https://github.com/electronifie/graph-calc/blob/master/test/8_calculator.js)):
 
 ```javascript
 var Calculator = require('graph-calc').Calculator;
