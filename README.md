@@ -6,7 +6,7 @@
 
 **Test** `npm test`
 
-**Generate Docs** `npm doc`
+**Generate Docs** `npm run doc`
 
 <hr>
 

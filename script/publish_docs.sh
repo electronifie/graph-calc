@@ -5,7 +5,7 @@
 if [ "$TRAVIS_REPO_SLUG" == "electronifie/graph-calc" ] && [ "$TRAVIS_NODE_VERSION" == "4.1" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_BRANCH" == "master" ]; then
 
   echo -e "Building docs...\n"
-  npm doc
+  npm run doc
 
   echo -e "Publishing docs...\n"
   cp -R ./doc $HOME/api-docs
