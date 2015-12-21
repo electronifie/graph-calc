@@ -32,7 +32,6 @@
   "devDependencies": {
     "chai": "^3.4.0",
     "ink-docstrap": "^1.0.5",
-    "jaguarjs-jsdoc": "0.0.1",
     "jsdoc": "^3.4.0",
     "mocha": "^2.0.1",
     "sinon": "^1.17.2",

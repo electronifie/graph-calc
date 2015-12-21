@@ -8,14 +8,11 @@
   "opts": {
     "destination": "./doc/",
     "readme": "README.md",
-    "recurse": true,
-    "template": "./node_modules/jaguarjs-jsdoc"
+    "recurse": true
   },
   "templates": {
-    "applicationName": "graph-calc",
-    "outputSourceFiles": false,
-    "meta": {
-      "title": "graph-calc docs"
+    "default": {
+      "outputSourceFiles": false
     }
   }
 }
