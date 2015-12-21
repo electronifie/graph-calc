@@ -1,9 +1,21 @@
 language: node_js
 node_js:
-  - "0.12"
-  - "0.11"
-  - "0.10"
-  - "iojs"
-
+- '0.12'
+- '0.11'
+- '0.10'
+- iojs
 script:
-  - "npm test"
+- npm test
+after_success:
+- ./script/publish_docs.sh
+deploy:
+  provider: npm
+  email: andrew.mckenzie@electronifie.com
+  api_key:
+    secure: NLFz56k+EAIJiNYb2W9gW71me6HnLqEZIzESvsKPGmmuPgkzshk9BLYHA4xJzRZhr77Omsl/XI7ONl9VEYFKUQi4dr+/AlN+o8woiVwzbNQ9tWZ0ECF2fwHvR3tsfhHVNv0d/1oWTM0/QcH5ie7VRAjyXOd8VkjswN2NIRcaYxIuUaHlDPx5vCB894LcM0Y7ZF3QtYgBzpcxxUJHaFD6EY4w5kMvuJ1RVkCX4116RVFYPFv/+C7hzy5HXB0iQN3eZGupOx3tLZm1BhbU5dZ/Om9WGdG1kyOmPkT8BZ9CoWjF4uGZdJzmt5zfls4CxgBLfDpi9h4lujFk1veju9VTbCb/ErcJAkqgUm+ZIst29834RmwdjjwKrxQ6ZYVLjcFXZXdoeu/7235zuEK9mmSvmMTjYYB1OtwHUQfoDvDDmIIftshO78oyRdxyvk97hFDEJ9Kc7vDzbl7SYpcRsnDvlOeoAn4QZYaTxKIrbhigd9/FTRW1s3KvLLD6dH63XQqhXOV+Bzoqac4jlwmJ/H8TFw3Xym4jusPmt1EUDfrXodErDAdTDnDLUozS4SILWWVFEMKQMfmn1iki2JhhOHgt+IDVQhQthxOPTAqMWvy7WQ9ffJAz9q0/81rHDIckLloF5Y+OEDUalG1BE/CUZYjBXCvmMuEXtt8jMHtG/8SvQ5M=
+  on:
+    tags: true
+    repo: electronifie/graph-calc
+env:
+  global:
+    secure: EfmRnNphRE94a8GWp5eZ107w84PgPWTWOkzB+s5iwYO3dEMA8270WsUc4PIXZxjIPV5SKTzSdZDWvjqpUz6+7whMpJ03Vmglz/d03XRRBdEQj7mPHFqD1qxzz9cQ/WNF2M+bfEKAxEQAFfMEIpXDgCW5EBrN41byqdPYGnUL8Ndj6KnJoVPB4GykxIfnDBHLYnBxw0uITI+/JFRqI7WL121R3hPOiVCcflJA7aiVvM3GqRCJx6+2k/Z9vLE+aFPndqmk9oopORacoCEJsfc/UBFZ2WGvSZ+Q9GtkDv8WvamQtRGsdPD44TTmZnHFYp6noz8FLibo7AvVshzYYjWlddmep47C5X+XpmsI15fEyNk7WvqzZFhlhp9acy1/LtmiAN8buj+9T/1qVHWFzM/ZP7hhyq1M7HUlJh4/v7jjitLktQHkK1BX850AycMKKP0xDB2FgVB8a7MTEa7L4Q0+xCnhiAaa4Vg8XeLKvskN3yif2HXvxJgVtRooAIVZ2opvonkbzIuwTM6H1HtCMqCvEstEOaYybSGBv23oK76VA/SSRXZDbzvselNCYJ9iaIBKGMaZdP+Z5NpiIj9oOjB8tcjnmCoGQih6lhYGLUEvnkf2AgNH8R6HHDAkGX0xJir6tbtFHi/ArJXj69Tjw0vXYVWJWx/ShDdKtIcT/U3n4as=
