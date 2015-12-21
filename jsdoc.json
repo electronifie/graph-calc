@@ -1,0 +1,21 @@
+{
+  "source": {
+    "include": [ "./lib" ]
+  },
+  "plugins": [
+    "plugins/markdown"
+  ],
+  "opts": {
+    "destination": "./doc/",
+    "readme": "README.md",
+    "recurse": true,
+    "template": "./node_modules/jaguarjs-jsdoc"
+  },
+  "templates": {
+    "applicationName": "graph-calc",
+    "outputSourceFiles": false,
+    "meta": {
+      "title": "graph-calc docs"
+    }
+  }
+}

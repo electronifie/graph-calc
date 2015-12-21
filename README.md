@@ -2,6 +2,16 @@
 
 [![Build Status](https://travis-ci.org/electronifie/graph-calc.svg?branch=master)](https://travis-ci.org/electronifie/graph-calc)
 
+## Getting started
+
+**Install** `npm install graph-calc --save`
+
+**Test** `npm test`
+
+**Generate Docs** `npm doc`
+
+<hr>
+
 ## Constructing the graph
 
 ### Setup
