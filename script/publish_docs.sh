@@ -16,7 +16,9 @@ if [ "$TRAVIS_REPO_SLUG" == "electronifie/graph-calc" ] && [ "$TRAVIS_NODE_VERSI
   git clone --quiet --branch=gh-pages https://${GH_TOKEN}@github.com/electronifie/graph-calc gh-pages > /dev/null
 
   cd gh-pages
-  git rm -rf .
+  mv .git ../.git_backup
+  rm -r *
+  mv ../.git_backup .git
   cp -Rf $HOME/api-docs/* .
   git add -f .
   git commit -m "Updating autogen'd docs for travis build $TRAVIS_BUILD_NUMBER."
