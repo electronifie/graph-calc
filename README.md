@@ -84,7 +84,7 @@ var startNode = graph.factory.getNode('teacher', 'teacher-Sue');
 var traverser = new Traverser({
   onVisitNode: function (node, meta) {
     var path = meta.path;
-    var depth = meta.path;
+    var depth = meta.depth;
     var viaEdge = meta.viaEdge;
     var previouslyVisited = meta.previouslyVisited;
     ...
